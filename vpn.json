@@ -1,0 +1,6 @@
+{
+  "role": "server",
+  "server_addr": "192.168.0.210",
+  "listen_addr": "192.168.0.210:8080",
+  "tun_addr": "10.0.0.1"
+}
