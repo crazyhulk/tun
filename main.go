@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"log"
 	"main/packet"
-	"main/tunip"
 	"net"
 	"net/http"
 	"os/exec"
@@ -261,7 +260,6 @@ func handleConn(conn *net.TCPConn) (err error) {
 }
 
 func hello(w http.ResponseWriter, req *http.Request) {
-	fmt.Println(tunip.NextIP())
 	fmt.Println("hello")
 	fmt.Fprintf(w, "hello\n")
 }
