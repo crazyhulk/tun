@@ -8,6 +8,7 @@ import (
 	"main/packet"
 	"net"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/songgao/water"
@@ -100,14 +101,26 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		binary.LittleEndian.PutUint32(headerBuf, uint32(n))
 		fmt.Println(headerBuf)
 		count, err := conn.Write(headerBuf)
-		if err != nil {
+		if err != io.EOF {
+			tun.Close()
+			conn = nil
+			tun = nil
+			runtime.Goexit()
+			return err
+		} else if err != nil {
 			log.Printf("write left body to socket failed. %s\n", err)
 			continue
 		}
 
 		count, err = conn.Write(packets)
 		fmt.Println("write conn:", count)
-		if err != nil {
+		if err != io.EOF {
+			tun.Close()
+			conn = nil
+			tun = nil
+			runtime.Goexit()
+			return err
+		} else if err != nil {
 			log.Printf("write left body to socket failed. %s\n", err)
 			continue
 		}
@@ -118,8 +131,8 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 
 func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 	defer func() {
-		conn.Close()
-		fmt.Println("conn close")
+		err := conn.Close()
+		fmt.Println("conn close", err)
 		conn = nil
 	}()
 
