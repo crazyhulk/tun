@@ -141,6 +141,12 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		fmt.Println("header", headerCount)
 		count := binary.LittleEndian.Uint32(headerCount)
 		fmt.Println("received :", count)
+		if count > 1500 {
+			logPool := make([]byte, 1500)
+			_, err = io.ReadFull(conn, logPool)
+			fmt.Println(headerCount, logPool)
+			_, err := tun.Write(logPool)
+		}
 		var bufPool = make([]byte, count)
 		_, err = io.ReadFull(conn, bufPool)
 
