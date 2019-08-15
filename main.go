@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"main/packet"
+	"main/tunnel"
 	"net"
 	"net/http"
 	"os/exec"
@@ -58,7 +59,11 @@ main 流程
 4，执行服务器或客户端逻辑
 */
 func main() {
-	go httpServer()
+	//httpServer()
+	manager := tunnel.Manager{}
+	manager.Port = "8080"
+	manager.Start()
+	return
 	cfgfile := "./vpn.json"
 	appcfg, err := LoadConfig(cfgfile)
 	if err != nil {
