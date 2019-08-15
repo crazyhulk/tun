@@ -15,6 +15,8 @@ import (
 	"github.com/songgao/water/waterutil"
 )
 
+var tunTable = map[string]net.IP{}
+
 type Manager struct {
 	Host string
 	Port string
@@ -65,7 +67,10 @@ func initTunInterface() (tun *water.Interface, err error) {
 		log.Fatal(err)
 	}
 
-	args := []string{tun.Name(), "10.0.0.1", "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
+	ip := nextIP()
+	tunTable[tun.Name()] = ip
+
+	args := []string{tun.Name(), ip.String(), "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
 	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
 		fmt.Println("error: can not link up:", tun.Name())
 		return nil, err
@@ -101,6 +106,8 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		fmt.Println(headerBuf)
 		count, err := conn.Write(headerBuf)
 		if err != nil {
+			ip := tunTable[tun.Name()]
+			releaseIP(ip)
 			tun.Close()
 			conn = nil
 			tun = nil
@@ -112,6 +119,8 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		count, err = conn.Write(packets)
 		fmt.Println("write conn:", count)
 		if err != nil {
+			ip := tunTable[tun.Name()]
+			releaseIP(ip)
 			tun.Close()
 			conn = nil
 			tun = nil
