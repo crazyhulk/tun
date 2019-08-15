@@ -83,6 +83,7 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 	var packets = make(packet.Packet, 65535)
 	var headerBuf = make([]byte, 4)
 	for {
+		fmt.Println("====", tun)
 		packets.Resize(65535)
 		n, err := tun.Read(packets)
 		if err != nil {
