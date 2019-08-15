@@ -100,7 +100,7 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		binary.LittleEndian.PutUint32(headerBuf, uint32(n))
 		fmt.Println(headerBuf)
 		count, err := conn.Write(headerBuf)
-		if err != io.EOF {
+		if err != nil {
 			tun.Close()
 			conn = nil
 			tun = nil
@@ -111,7 +111,7 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 
 		count, err = conn.Write(packets)
 		fmt.Println("write conn:", count)
-		if err != io.EOF {
+		if err != nil {
 			tun.Close()
 			conn = nil
 			tun = nil
