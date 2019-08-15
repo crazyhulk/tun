@@ -87,7 +87,6 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		packets = packets[:n]
 		// 写入全局 socket
 		if conn == nil {
-			tun.Close()
 			fmt.Printf("Conn is null, ignore.\n")
 			time.Sleep(time.Second)
 			continue
