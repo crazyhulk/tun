@@ -144,8 +144,18 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		if count > 1500 {
 			logPool := make([]byte, 1500)
 			_, err = io.ReadFull(conn, logPool)
+			if err != nil {
+				log.Printf("read failed %s\n", err)
+				return
+			}
+
 			fmt.Println(headerCount, logPool)
-			_, err := tun.Write(logPool)
+			_, err = tun.Write(logPool)
+			if err != nil {
+				log.Printf("read failed %s\n", err)
+				return
+			}
+
 		}
 		var bufPool = make([]byte, count)
 		_, err = io.ReadFull(conn, bufPool)
