@@ -39,6 +39,7 @@ func (m *Manager) Start() {
 
 	for {
 		client, err := ln.AcceptTCP()
+		fmt.Println("new connection:", client)
 		if err != nil {
 			log.Printf("accept tcp failed. %s\n", err)
 			continue
@@ -70,7 +71,8 @@ func initTunInterface() (tun *water.Interface, err error) {
 	ip := nextIP()
 	tunTable[tun.Name()] = ip
 
-	args := []string{tun.Name(), ip.String(), "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
+	//args := []string{tun.Name(), ip.String() + "/16", "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
+	args := []string{tun.Name(), ip.String() + "/16", "up", "mtu", "1500"}
 	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
 		fmt.Println("error: can not link up:", tun.Name())
 		return nil, err
