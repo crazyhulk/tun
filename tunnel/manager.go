@@ -209,10 +209,11 @@ func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
 	fmt.Println("=====", hostIP.String(), clentIP.String())
 	_, err := conn.Write(headerBuf)
 
-	ips := make([]byte, 8)
-	ips = append(ips, hostIP...)
-	ips = append(ips, clentIP...)
-	_, err = conn.Write(ips)
+	//	ips := make([]byte, 8)
+	//	ips = append(ips, hostIP...)
+	//	ips = append(ips, clentIP...)
+	_, err = conn.Write(hostIP)
+	_, err = conn.Write(clentIP)
 	if err != nil {
 		log.Printf("send ip failed %s\n", err)
 		return err
