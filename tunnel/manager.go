@@ -120,8 +120,7 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		fmt.Println(headerBuf)
 		count, err := conn.Write(headerBuf)
 		if err != nil {
-			ip := tunTable[tun.Name()]
-			releaseIP(ip)
+			releaseByTunName(tun.Name())
 			tun.Close()
 			conn = nil
 			tun = nil
@@ -133,8 +132,7 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		count, err = conn.Write(packets)
 		fmt.Println("write conn:", count)
 		if err != nil {
-			ip := tunTable[tun.Name()]
-			releaseIP(ip)
+			releaseByTunName(tun.Name())
 			tun.Close()
 			conn = nil
 			tun = nil
