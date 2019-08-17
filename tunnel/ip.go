@@ -8,7 +8,28 @@ import (
 
 var maxIP uint16
 var usedIPs = map[uint16]bool{}
+var hostIPs = map[string]net.IP{}
+var clientIPs = map[string]net.IP{}
 var m sync.Mutex
+
+func allocIPByTunName(tunName string) (host, client net.IP) {
+	host = nextIP()
+	client = nextIP()
+	hostIPs[tunName] = host
+	clientIPs[tunName] = client
+	return
+}
+
+func releaseByTunName(name string) {
+	hip, ok := hostIPs[name]
+	if ok {
+		releaseIP(hip)
+	}
+	cip, ok := clientIPs[name]
+	if ok {
+		releaseIP(cip)
+	}
+}
 
 func releaseIP(ip net.IP) {
 	m.Lock()

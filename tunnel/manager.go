@@ -15,6 +15,10 @@ import (
 	"github.com/songgao/water/waterutil"
 )
 
+const (
+	SENDIP = uint32(0x00010000)
+)
+
 var tunTable = map[string]net.IP{}
 
 type Manager struct {
@@ -46,7 +50,17 @@ func (m *Manager) Start() {
 		}
 		tun, err := initTunInterface()
 		if err != nil {
-			log.Printf("accept tcp failed. %s\n", err)
+			continue
+		}
+
+		hip, cip := allocIPByTunName(tun.Name())
+
+		err = upTun(tun, hip, cip)
+		if err != nil {
+			continue
+		}
+		err = sendIPs(client, hip, cip)
+		if err != nil {
 			continue
 		}
 
@@ -60,25 +74,22 @@ func initTunInterface() (tun *water.Interface, err error) {
 	tuncfg := water.Config{
 		DeviceType: water.TUN,
 	}
-
 	tun, err = water.New(tuncfg)
 
 	fmt.Println(tun.Name())
 	if err != nil {
 		log.Fatal(err)
 	}
+	return tun, nil
+}
 
-	ip := nextIP()
-	tunTable[tun.Name()] = ip
-
-	//args := []string{tun.Name(), ip.String() + "/16", "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
-	args := []string{tun.Name(), ip.String() + "/16", "up", "mtu", "1500"}
+func upTun(tun *water.Interface, hostIP, clentIP net.IP) (err error) {
+	args := []string{tun.Name(), hostIP.String(), "pointopoint", clentIP.String(), "up", "mtu", "1500"}
 	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
 		fmt.Println("error: can not link up:", tun.Name())
-		return nil, err
+		return err
 	}
-
-	return tun, nil
+	return
 }
 
 func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
@@ -190,4 +201,18 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 	}
 
 	return
+}
+
+func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
+	headerBuf := make([]byte, 4)
+	binary.LittleEndian.PutUint32(headerBuf, SENDIP)
+	ips := make([]byte, 8)
+	ips = append(ips, hostIP...)
+	ips = append(ips, clentIP...)
+	_, err := conn.Write(headerBuf)
+	if err != nil {
+		log.Printf("send ip failed %s\n", err)
+		return err
+	}
+	return nil
 }
