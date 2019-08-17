@@ -206,10 +206,13 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
 	headerBuf := make([]byte, 4)
 	binary.LittleEndian.PutUint32(headerBuf, SENDIP)
+	fmt.Println("=====", hostIP.String(), clentIP.String())
+	_, err := conn.Write(headerBuf)
+
 	ips := make([]byte, 8)
 	ips = append(ips, hostIP...)
 	ips = append(ips, clentIP...)
-	_, err := conn.Write(headerBuf)
+	_, err := conn.Write(ips)
 	if err != nil {
 		log.Printf("send ip failed %s\n", err)
 		return err
