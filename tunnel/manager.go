@@ -93,10 +93,10 @@ func upTun(tun *water.Interface, hostIP, clentIP net.IP) (err error) {
 }
 
 func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
+	// 此处大小应该不大于协商的 mtu 这里默认用的1500
 	var packets = make(packet.Packet, 65535)
 	var headerBuf = make([]byte, 4)
 	for {
-		fmt.Println("====", tun)
 		packets.Resize(65535)
 		n, err := tun.Read(packets)
 		if err != nil {
@@ -207,9 +207,6 @@ func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
 	fmt.Println("=====", hostIP.String(), clentIP.String())
 	_, err := conn.Write(headerBuf)
 
-	//	ips := make([]byte, 8)
-	//	ips = append(ips, hostIP...)
-	//	ips = append(ips, clentIP...)
 	_, err = conn.Write(hostIP[12:16])
 	_, err = conn.Write(clentIP[12:16])
 	if err != nil {
