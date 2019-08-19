@@ -48,7 +48,11 @@ func nextIP() (ip net.IP) {
 	n := 0
 	for ; maxIP == 0 || usedIPs[maxIP]; maxIP++ {
 		n++
+		if n&0x00ff == 0x00ff {
+			continue
+		}
 		if n > 0xffff {
+			maxIP = 0
 			return
 		}
 	}
