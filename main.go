@@ -2,13 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"log"
 	"main/tunnel"
 	"net/http"
-	"os/exec"
-
-	"github.com/songgao/water"
 )
 
 /*
@@ -62,59 +57,59 @@ func NewProxy() *Pxy {
 }
 
 // ServeHTTP is the main handler for all requests.
-func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	fmt.Printf("Received request %s %s %s\n",
-		req.Method,
-		req.Host,
-		req.RemoteAddr,
-	)
-
-	fmt.Println("http.method", req.Method)
-	if req.Method != http.MethodConnect {
-		return
-	}
-	// Step 1
-	host := req.URL.Host
-	println(host)
-	hij, ok := rw.(http.Hijacker)
-	if !ok {
-		panic("HTTP Server does not support hijacking")
-	}
-
-	client, _, err := hij.Hijack()
-	if err != nil {
-		return
-	}
-	if _, err := client.Write([]byte("hello")); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	tuncfg := water.Config{
-		DeviceType: water.TUN,
-	}
-
-	gl_ifce, err = water.New(tuncfg)
-
-	fmt.Println(gl_ifce.Name())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	args := []string{tuncfg.Name, "10.0.0.1", "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
-	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
-		fmt.Println("error")
-		return
-	}
-
-	//// Step 2
-	//server, err := net.Dial("tcp", host)
-	//if err != nil {
-	//	return
-	//}
-	//client.Write([]byte("HTTP/1.0 200 Connection Established\r\n\r\n"))
-
-	// Step 3
-	io.Copy(gl_ifce, client)
-	go io.Copy(client, gl_ifce)
-}
+//func (p *Pxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+//	fmt.Printf("Received request %s %s %s\n",
+//		req.Method,
+//		req.Host,
+//		req.RemoteAddr,
+//	)
+//
+//	fmt.Println("http.method", req.Method)
+//	if req.Method != http.MethodConnect {
+//		return
+//	}
+//	// Step 1
+//	host := req.URL.Host
+//	println(host)
+//	hij, ok := rw.(http.Hijacker)
+//	if !ok {
+//		panic("HTTP Server does not support hijacking")
+//	}
+//
+//	client, _, err := hij.Hijack()
+//	if err != nil {
+//		return
+//	}
+//	if _, err := client.Write([]byte("hello")); err != nil {
+//		fmt.Println(err)
+//		return
+//	}
+//
+//	tuncfg := water.Config{
+//		DeviceType: water.TUN,
+//	}
+//
+//	//	gl_ifce, err = water.New(tuncfg)
+//	//
+//	//	fmt.Println(gl_ifce.Name())
+//	//	if err != nil {
+//	//		log.Fatal(err)
+//	//	}
+//
+//	args := []string{tuncfg.Name, "10.0.0.1", "pointopoint", "10.0.0.2", "up", "mtu", "1500"}
+//	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
+//		fmt.Println("error")
+//		return
+//	}
+//
+//	//// Step 2
+//	//server, err := net.Dial("tcp", host)
+//	//if err != nil {
+//	//	return
+//	//}
+//	//client.Write([]byte("HTTP/1.0 200 Connection Established\r\n\r\n"))
+//
+//	// Step 3
+//	io.Copy(gl_ifce, client)
+//	go io.Copy(client, gl_ifce)
+//}

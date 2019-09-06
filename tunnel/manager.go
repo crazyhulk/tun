@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/songgao/water"
-	"github.com/songgao/water/waterutil"
 )
 
 const (
@@ -50,6 +49,7 @@ func (m *Manager) Start() {
 		}
 		tun, err := initTunInterface()
 		if err != nil {
+			fmt.Println("initTunInterface:", err)
 			continue
 		}
 
@@ -57,10 +57,12 @@ func (m *Manager) Start() {
 
 		err = upTun(tun, hip, cip)
 		if err != nil {
+			fmt.Println("upTun", err)
 			continue
 		}
 		err = sendIPs(client, hip, cip)
 		if err != nil {
+			fmt.Println("sendIPs", err)
 			continue
 		}
 
@@ -110,33 +112,33 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 			time.Sleep(time.Second)
 			continue
 		}
-		fmt.Printf("read tun count:%d, is_ipv4:%v \n", n, waterutil.IsIPv4(packets))
-		fmt.Println("des:", waterutil.IPv4Destination(packets))
-		fmt.Println("source:", waterutil.IPv4Source(packets))
+		//		fmt.Printf("read tun count:%d, is_ipv4:%v \n", n, waterutil.IsIPv4(packets))
+		//		fmt.Println("des:", waterutil.IPv4Destination(packets))
+		//		fmt.Println("source:", waterutil.IPv4Source(packets))
 
 		//count, err := io.Copy(gl_conn, gl_ifce)
 
 		binary.LittleEndian.PutUint32(headerBuf, uint32(n))
-		fmt.Println(headerBuf)
+		//fmt.Println(headerBuf)
 		count, err := conn.Write(headerBuf)
 		if err != nil {
 			releaseByTunName(tun.Name())
 			tun.Close()
 			conn = nil
 			tun = nil
-			log.Printf("write left body to socket failed. %s\n", err)
+			log.Printf("write left body:%d to socket failed. %s\n", count, err)
 			runtime.Goexit()
 			return err
 		}
 
 		count, err = conn.Write(packets)
-		fmt.Println("write conn:", count)
+		//fmt.Println("write conn:", count)
 		if err != nil {
 			releaseByTunName(tun.Name())
 			tun.Close()
 			conn = nil
 			tun = nil
-			log.Printf("write left body to socket failed. %s\n", err)
+			log.Printf("write left body:%d to socket failed. %s\n", count, err)
 			runtime.Goexit()
 			return err
 		}
@@ -159,9 +161,9 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 			log.Printf("read failed %s\n", err)
 			return err
 		}
-		fmt.Println("header", headerCount)
+		//fmt.Println("header", headerCount)
 		count := binary.LittleEndian.Uint32(headerCount)
-		fmt.Println("received :", count)
+		//fmt.Println("received :", count)
 		if count > 1500 {
 			logPool := make([]byte, 1500)
 			_, err = io.ReadFull(conn, logPool)
@@ -170,7 +172,7 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 				return
 			}
 
-			fmt.Println(headerCount, logPool)
+			//fmt.Println(headerCount, logPool)
 			_, err = tun.Write(logPool)
 			if err != nil {
 				log.Printf("read failed %s\n", err)
@@ -181,8 +183,8 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		var bufPool = make([]byte, count)
 		_, err = io.ReadFull(conn, bufPool)
 
-		fmt.Println("des:", waterutil.IPv4Destination(bufPool))
-		fmt.Println("source:", waterutil.IPv4Source(bufPool))
+		//		fmt.Println("des:", waterutil.IPv4Destination(bufPool))
+		//		fmt.Println("source:", waterutil.IPv4Source(bufPool))
 
 		if err != nil {
 			log.Printf("read failed %s\n", err)
