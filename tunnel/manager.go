@@ -165,6 +165,12 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		count := binary.LittleEndian.Uint32(headerCount)
 		//fmt.Println("received :", count)
 		if count > 1500 {
+
+			iErr := invalidPacket(conn)
+			if iErr != nil {
+				return
+			}
+			continue
 			logPool := make([]byte, 1500)
 			_, err = io.ReadFull(conn, logPool)
 			if err != nil {
@@ -215,5 +221,12 @@ func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
 		log.Printf("send ip failed %s\n", err)
 		return err
 	}
+	return nil
+}
+
+func invalidPacket(conn *net.TCPConn) error {
+	headerBuf := make([]byte, 4)
+	binary.LittleEndian.PutUint32(headerBuf, 0xFFFFFFFF)
+	conn.Write(headerBuf)
 	return nil
 }
