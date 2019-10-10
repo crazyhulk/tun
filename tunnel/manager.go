@@ -165,7 +165,7 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		count := binary.LittleEndian.Uint32(headerCount)
 		//fmt.Println("received :", count)
 		if count > 1500 {
-
+			fmt.Println("headerbuf: ======", headerCount, count)
 			iErr := invalidPacket(conn)
 			if iErr != nil {
 				return
@@ -202,7 +202,7 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 			fmt.Println(n, count, err)
 			return err
 		} else {
-			fmt.Println("write tun:", n)
+			//fmt.Println("write tun:", n)
 		}
 	}
 
