@@ -16,13 +16,19 @@ import (
 
 const (
 	SENDIP = uint32(0x00010000)
+
+	connecting = int32(1)
+	connected  = int32(2)
 )
 
 var tunTable = map[string]net.IP{}
 
+var managerPool = map[string]Manager{}
+
 type Manager struct {
-	Host string
-	Port string
+	Host  string
+	Port  string
+	State int32
 }
 
 func (m *Manager) Start() {
@@ -42,7 +48,6 @@ func (m *Manager) Start() {
 
 	for {
 		client, err := ln.AcceptTCP()
-		fmt.Println("new connection:", client)
 		if err != nil {
 			log.Printf("accept tcp failed. %s\n", err)
 			continue
