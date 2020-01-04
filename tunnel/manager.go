@@ -215,22 +215,22 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 }
 
 func sendIPs(conn *net.TCPConn, hostIP, clentIP net.IP) error {
-	var headerCount = make([]byte, 4)
-	_, err := io.ReadFull(conn, headerCount)
-	if err != nil {
-		log.Printf("read failed %s\n", err)
-		return err
-	}
-	//fmt.Println("header", headerCount)
-	count := binary.LittleEndian.Uint32(headerCount)
-	if count != SENDIP {
-		return fmt.Errorf("need consult with ip address")
-	}
+//	var headerCount = make([]byte, 4)
+//	_, err := io.ReadFull(conn, headerCount)
+//	if err != nil {
+//		log.Printf("read failed %s\n", err)
+//		return err
+//	}
+//	//fmt.Println("header", headerCount)
+//	count := binary.LittleEndian.Uint32(headerCount)
+//	if count != SENDIP {
+//		return fmt.Errorf("need consult with ip address")
+//	}
 
 	headerBuf := make([]byte, 4)
 	binary.LittleEndian.PutUint32(headerBuf, SENDIP)
 	fmt.Println("=====", hostIP.String(), clentIP.String())
-	_, err = conn.Write(headerBuf)
+	_, err := conn.Write(headerBuf)
 
 	_, err = conn.Write(hostIP[12:16])
 	_, err = conn.Write(clentIP[12:16])
