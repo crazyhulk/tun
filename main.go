@@ -17,6 +17,7 @@ func main() {
 	//httpServer()
 	manager := tunnel.Manager{}
 	manager.Port = "8080"
+	manager.UDPPort = "8081"
 	manager.Start()
 }
 

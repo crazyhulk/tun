@@ -1,6 +1,7 @@
 package tunnel
 
 import (
+	"encoding/binary"
 	"fmt"
 	"net"
 	"sync"
@@ -10,6 +11,9 @@ var maxIP uint16
 var usedIPs = map[uint16]bool{}
 var hostIPs = map[string]net.IP{}
 var clientIPs = map[string]net.IP{}
+
+var idToIP = map[int32]net.IP{}
+var ipToID = map[string]int32{}
 var m sync.Mutex
 
 func allocIPByTunName(tunName string) (host, client net.IP) {
@@ -62,5 +66,12 @@ func nextIP() (ip net.IP) {
 	s := fmt.Sprintf("10.0.%d.%d", (maxIP>>8)&0xff, maxIP&0xff)
 
 	ip = net.ParseIP(s)
+	idToIP[int32(maxIP)] = ip
+	ipToID[s] = int32(maxIP)
 	return
+}
+
+func addressID(ip net.IP) uint32 {
+	b := ip[12:16]
+	return binary.BigEndian.Uint32(b) & 0x0000ffff
 }
