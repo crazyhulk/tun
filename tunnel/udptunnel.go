@@ -50,13 +50,13 @@ func (m *Manager) StartListenUDP() {
 			}
 			n, err := info.Tun.Write(packets[0:count])
 			fmt.Println("======write:", n, err)
-			return
+			continue
 		}
 
-		flag := binary.LittleEndian.Uint32(packets[0:3])
-		if flag >= SENDIP {
+		flag := binary.LittleEndian.Uint32(packets[0:count])
+		if flag != SENDIP {
 			// 这里处理特殊 datagram 协商
-			return
+			continue
 		}
 
 		tun, err := initTunInterface()
