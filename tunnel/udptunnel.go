@@ -36,7 +36,7 @@ func (m *Manager) StartListenUDP() {
 			continue
 		}
 
-		fmt.Println("======packets:", packets)
+		fmt.Println("======packets:", packets[0:count])
 		fmt.Printf("=====%+v", tunPool)
 		if info, ok := tunPool[addr.IP.String()]; ok {
 			flag := binary.LittleEndian.Uint32(packets[0:3])
