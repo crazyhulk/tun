@@ -36,16 +36,26 @@ func (m *Manager) StartListenUDP() {
 			continue
 		}
 
+		fmt.Println("======packets:", packets)
+		fmt.Printf("=====%+v", tunPool)
 		if info, ok := tunPool[addr.IP.String()]; ok {
 			flag := binary.LittleEndian.Uint32(packets[0:3])
-			if flag >= SENDIP {
+			if flag == SENDIP {
 				// 这里处理特殊 datagram 协商
-				return
+				continue
 			}
 
-			fmt.Println("======packets:", packets)
+			if count < 8 {
+				continue
+			}
 			n, err := info.Tun.Write(packets[0:count])
 			fmt.Println("======write:", n, err)
+			return
+		}
+
+		flag := binary.LittleEndian.Uint32(packets[0:3])
+		if flag >= SENDIP {
+			// 这里处理特殊 datagram 协商
 			return
 		}
 
