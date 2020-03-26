@@ -13,7 +13,7 @@ import (
 	"github.com/songgao/water"
 )
 
-func (m *Manager) StartListenTcp() {
+func (m *Manager) StartListenTCP() {
 	if m.Port == "" {
 		log.Printf("invalid port")
 		return

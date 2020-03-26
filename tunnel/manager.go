@@ -37,8 +37,8 @@ type Manager struct {
 }
 
 func (m *Manager) Start() {
-	go m.StartListenTcp()
-	go m.StartListenUDP()
+	go m.StartListenTCP()
+	m.StartListenUDP()
 }
 
 func initTunInterface() (tun *water.Interface, err error) {
