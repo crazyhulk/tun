@@ -56,6 +56,12 @@ func (m *Manager) StartListenUDP() {
 		}
 
 		hip, cip := allocIPByTunName(tun.Name())
+		err = upTun(tun, hip, cip)
+		if err != nil {
+			fmt.Println("upTun", err)
+			continue
+		}
+
 		headerBuf := make([]byte, 4)
 		binary.LittleEndian.PutUint32(headerBuf, SENDIP)
 
