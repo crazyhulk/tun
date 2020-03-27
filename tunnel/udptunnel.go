@@ -37,9 +37,10 @@ func (m *Manager) StartListenUDP() {
 		}
 
 		fmt.Println("======packets:", packets[0:count])
-		fmt.Printf("=====%+v", tunPool)
+		fmt.Printf("=====%+v\n", tunPool)
 		if info, ok := tunPool[addr.IP.String()]; ok {
-			flag := binary.LittleEndian.Uint32(packets[0:3])
+			flag := binary.LittleEndian.Uint32(packets[0:count])
+			fmt.Println("======flag:", flag, "==== sendip:", SENDIP)
 			if flag == SENDIP {
 				// 这里处理特殊 datagram 协商
 				continue
