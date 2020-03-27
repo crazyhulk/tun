@@ -97,6 +97,7 @@ func tunToUDP(conn *net.UDPConn, addr *net.UDPAddr, tun *water.Interface) error 
 	//	var headerBuf = make([]byte, 4)
 	for {
 		packets.Resize(65535)
+		fmt.Println("===== read from tun")
 		n, err := tun.Read(packets)
 		if err != nil {
 			log.Fatal(err)
@@ -110,6 +111,7 @@ func tunToUDP(conn *net.UDPConn, addr *net.UDPAddr, tun *water.Interface) error 
 			continue
 		}
 
+		fmt.Println("===== write to udp:", packets)
 		count, err := conn.WriteToUDP(packets, addr)
 		if err != nil {
 			releaseByTunName(tun.Name())
