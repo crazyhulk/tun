@@ -35,10 +35,11 @@ func (m *Manager) StartListenUDP() {
 			log.Printf("accept udp failed. %s\n", err)
 			continue
 		}
+		fmt.Println("====addr:", addr.String())
 
 		fmt.Println("======packets:", packets[0:count])
-		fmt.Printf("=====%+v\n", tunPool)
-		if info, ok := tunPool[addr.IP.String()]; ok {
+		fmt.Printf("=====tunPool:%+v\n", tunPool)
+		if info, ok := tunPool[addr.String()]; ok {
 			flag := binary.LittleEndian.Uint32(packets[0:count])
 			fmt.Println("======flag:", flag, "==== sendip:", SENDIP)
 			if flag == SENDIP {
