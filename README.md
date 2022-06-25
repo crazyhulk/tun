@@ -1,9 +1,40 @@
+# tun
 This is an easy VPN server example by golang.
 It support Tun interface only.
 
-# How to use?
+## 
+```
++---------------+               +---------------+
+|               |               |               |
+|               |               |               |
++-------+-------+               +-------^-------+
+        |                               |
++-------v-------+  works here   +-------+-------+
+|Network Layer  <---------------+Network Layer  |
+|Tun Interface  +--------------->Tun Interface  |
++-------+-------+               +-------^-------+
+        |                               |
++-------v-------+               +-------+-------+
+|Data Link Layer|               |Data Link Layer|
+|Tap Interface  |               |Tap Interface  |
++-------+-------+               +-------^-------+
+        |                               |
++-------v-------+               +-------+-------+
+|Physical Layer |               |Physical Layer |
+|               |               |               |
++-------+-------+               +-------^-------+
+        |                               |
+        +-------------------------------+
+```
 
-Just run go run main.go, and you must config your vpn.json first.
+## Clients.
+ - [XVPN](https://github.com/CrazyHulk/XVPN)：iOS 
+ - [XVPN-Android](https://github.com/CrazyHulk/XVPN-Android)： Android
+ - [macvpn](https://github.com/CrazyHulk/macvpn)：macOS 
+
+## How to use?
+
+Config your vpn.json first.
 
 Enjoy yourself!
 
