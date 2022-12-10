@@ -52,7 +52,6 @@ func (m *Manager) StartListenTCP() {
 			fmt.Println("sendIPs", err)
 			continue
 		}
-
 		go tunToTcp(client, tun)
 		go tcpToTun(client, tun)
 	}
@@ -67,7 +66,6 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		packets.Resize(65535)
 		n, err := tun.Read(packets)
 		if err != nil {
-			log.Fatal(err)
 			return err
 		}
 		packets = packets[:n]
@@ -97,7 +95,6 @@ func tunToTcp(conn *net.TCPConn, tun *water.Interface) (err error) {
 		}
 
 		count, err = conn.Write(packets)
-		//fmt.Println("write conn:", count)
 		if err != nil {
 			releaseByTunName(tun.Name())
 			tun.Close()
@@ -169,6 +166,7 @@ func tcpToTun(conn *net.TCPConn, tun *water.Interface) (err error) {
 		} else {
 			//fmt.Println("write tun:", n)
 		}
+		fmt.Println("write tun:===============", n, err, bufPool)
 	}
 
 	return

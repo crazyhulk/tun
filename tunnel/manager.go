@@ -2,9 +2,9 @@ package tunnel
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/songgao/water"
@@ -49,15 +49,21 @@ func initTunInterface() (tun *water.Interface, err error) {
 
 	fmt.Println(tun.Name())
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	return tun, nil
 }
 
 func upTun(tun *water.Interface, hostIP, clentIP net.IP) (err error) {
 	args := []string{tun.Name(), hostIP.String(), "pointopoint", clentIP.String(), "up", "mtu", "1500"}
+	// mac os 不需要我们指定
+	if runtime.GOOS == "darwin" {
+		args = []string{tun.Name(), hostIP.String(), clentIP.String(), "up", "mtu", "1500"}
+	}
+
 	if err = exec.Command("/sbin/ifconfig", args...).Run(); err != nil {
-		fmt.Println("error: can not link up:", tun.Name())
+		fmt.Println("error: can not link up:", tun.Name(), "err:", err)
+		panic(err)
 		return err
 	}
 	return
